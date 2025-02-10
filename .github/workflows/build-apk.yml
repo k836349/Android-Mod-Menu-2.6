@@ -27,7 +27,7 @@ jobs:
         if [ ! -f gradle/wrapper/gradle-wrapper.jar ]; then
           echo "gradle-wrapper.jar not found! Downloading it..."
           mkdir -p gradle/wrapper
-          wget https://github.com/gradle/gradle/raw/master/gradle/wrapper/gradle-wrapper.jar -O gradle/wrapper/gradle-wrapper.jar
+          wget https://github.com/k836349/Android-Mod-Menu-2.6/blob/main/gradle/wrapper/gradle-wrapper.jar -O gradle/wrapper/gradle-wrapper.jar
         fi
 
     - name: Grant execute permission for gradlew
