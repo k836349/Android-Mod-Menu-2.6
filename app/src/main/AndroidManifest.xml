@@ -16,6 +16,9 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <activity
+    android:name=".MainActivity"
+    android:exported="true">
         </activity>
         <service
             android:name="uk.lgl.modmenu.FloatingModMenuService"
