@@ -3,7 +3,7 @@ name: Build APK
 on:
   push:
     branches:
-      - main  # يمكنك تغيير الفرع إلى الفرع الذي تريد بناء APK منه
+      - main
   pull_request:
     branches:
       - main
@@ -19,33 +19,25 @@ jobs:
     - name: Set up JDK
       uses: actions/setup-java@v3
       with:
-        java-version: '11'  # إصدار Java المطلوب
+        java-version: '11'
         distribution: 'temurin'
 
-    - name: Read Gradle version from gradle-wrapper.properties
-      id: gradle-version
+    - name: Ensure gradle-wrapper.jar exists
       run: |
-        GRADLE_VERSION=$(grep "distributionUrl" gradle/wrapper/gradle-wrapper.properties | cut -d '-' -f 2)
-        echo "Gradle version: $GRADLE_VERSION"
-        echo "GRADLE_VERSION=$GRADLE_VERSION" >> $GITHUB_ENV
-
-    - name: Install Gradle
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y unzip
-        wget https://services.gradle.org/distributions/gradle-$GRADLE_VERSION-bin.zip -P /tmp
-        sudo unzip -d /opt/gradle /tmp/gradle-$GRADLE_VERSION-bin.zip
-        echo "GRADLE_HOME=/opt/gradle/gradle-$GRADLE_VERSION" >> $GITHUB_ENV
-        echo "$GRADLE_HOME/bin" >> $GITHUB_PATH
+        if [ ! -f gradle/wrapper/gradle-wrapper.jar ]; then
+          echo "gradle-wrapper.jar not found! Downloading it..."
+          mkdir -p gradle/wrapper
+          wget https://github.com/gradle/gradle/raw/master/gradle/wrapper/gradle-wrapper.jar -O gradle/wrapper/gradle-wrapper.jar
+        fi
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
     - name: Build APK
-      run: ./gradlew assembleDebug  # بناء APK Debug
+      run: ./gradlew assembleDebug
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: app-debug.apk
-        path: app/build/outputs/apk/debug/app-debug.apk  # المسار إلى ملف APK
+        path: app/build/outputs/apk/debug/app-debug.apk
