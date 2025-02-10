@@ -3,7 +3,7 @@ name: Build APK
 on:
   push:
     branches:
-      - main  
+      - main  # يمكنك تغيير الفرع إلى الفرع الذي تريد بناء APK منه
   pull_request:
     branches:
       - main
@@ -19,17 +19,33 @@ jobs:
     - name: Set up JDK
       uses: actions/setup-java@v3
       with:
-        java-version: '11'  
+        java-version: '11'  # إصدار Java المطلوب
         distribution: 'temurin'
+
+    - name: Read Gradle version from gradle-wrapper.properties
+      id: gradle-version
+      run: |
+        GRADLE_VERSION=$(grep "distributionUrl" gradle/wrapper/gradle-wrapper.properties | cut -d '-' -f 2)
+        echo "Gradle version: $GRADLE_VERSION"
+        echo "GRADLE_VERSION=$GRADLE_VERSION" >> $GITHUB_ENV
+
+    - name: Install Gradle
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y unzip
+        wget https://services.gradle.org/distributions/gradle-$GRADLE_VERSION-bin.zip -P /tmp
+        sudo unzip -d /opt/gradle /tmp/gradle-$GRADLE_VERSION-bin.zip
+        echo "GRADLE_HOME=/opt/gradle/gradle-$GRADLE_VERSION" >> $GITHUB_ENV
+        echo "$GRADLE_HOME/bin" >> $GITHUB_PATH
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
     - name: Build APK
-      run: ./gradlew assembleDebug  
+      run: ./gradlew assembleDebug  # بناء APK Debug
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: app-debug.apk
-        path: app/build/outputs/apk/debug/app-debug.apk  
+        path: app/build/outputs/apk/debug/app-debug.apk  # المسار إلى ملف APK
