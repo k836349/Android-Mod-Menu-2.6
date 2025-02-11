@@ -8,7 +8,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -17,15 +16,18 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: '17'
+          distribution: 'temurin'
 
       - name: Download Gradle Wrapper
         run: |
           mkdir -p gradle/wrapper
-          curl -L -o gradle/wrapper/gradle-wrapper.jar https://github.com/k836349/Android-Mod-Menu-2.6/raw/main/gradle/wrapper/gradle-wrapper.jar
+          curl -L -o gradle/wrapper/gradle-wrapper.jar https://github.com/gradle/gradle/releases/download/v7.4.2/gradle-wrapper.jar
           echo "distributionUrl=https\://services.gradle.org/distributions/gradle-7.4.2-bin.zip" > gradle/wrapper/gradle-wrapper.properties
+          chmod +x gradle/wrapper/gradle-wrapper.jar
 
       - name: Build APK
-        run: ./gradlew assembleDebug
+        run: |
+          ./gradlew assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
