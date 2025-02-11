@@ -2,36 +2,33 @@ name: Build APK
 
 on:
   push:
-    branches: [ main ] # Or your main branch name
+    branches:
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-      - name: Set up JDK 17 # Or your preferred JDK version
-        uses: actions/setup-java@v3
+      - name: Set up JDK
+        uses: actions/setup-java@v2
         with:
-          java-version: '17'
-          distribution: 'temurin' # Or 'zulu', 'adopt', etc.
+          java-version: '17' # تحديث الإصدار إلى 17
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v2
-        with:
-          build-tools-version: '33.0.0' # Or latest stable version
-          api-level: '33' # Or your target API level
-          ndk-version: 'latest' # Or a specific NDK version if needed
-
-      - name: Grant execute permission to gradlew
-        run: chmod +x ./gradlew
+      - name: Download Gradle Wrapper
+        run: |
+          mkdir -p gradle/wrapper
+          curl -L -o gradle/wrapper/gradle-wrapper.jar https://github.com/k836349/Android-Mod-Menu-2.6/raw/main/gradle/wrapper/gradle-wrapper.jar
+          echo "distributionUrl=https\://services.gradle.org/distributions/gradle-7.4.2-bin.zip" > gradle/wrapper/gradle-wrapper.properties
 
       - name: Build APK
-        run: ./gradlew assembleDebug # Or ./gradlew assembleRelease for a release build
+        run: ./gradlew assembleDebug
 
       - name: Upload APK
-        uses: actions/upload-artifact@v4 # Updated to v4
+        uses: actions/upload-artifact@v2
         with:
-          name: app-debug.apk # Or a more descriptive name
-          path: app/build/outputs/apk/debug/app-debug.apk # Adjust path if necessary
+          name: my-apk
+          path: app/build/outputs/apk/debug/app-debug.apk
